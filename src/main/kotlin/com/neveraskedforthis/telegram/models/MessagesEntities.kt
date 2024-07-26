@@ -1,4 +1,4 @@
-package com.neveraskedforthis.telegram
+package com.neveraskedforthis.telegram.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

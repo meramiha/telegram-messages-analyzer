@@ -1,5 +1,9 @@
 package com.neveraskedforthis.telegram
 
+import com.neveraskedforthis.telegram.models.BaseEntity
+import com.neveraskedforthis.telegram.models.Chat
+import com.neveraskedforthis.telegram.models.Message
+import com.neveraskedforthis.telegram.models.Service
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic

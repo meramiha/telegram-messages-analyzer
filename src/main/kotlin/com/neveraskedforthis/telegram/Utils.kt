@@ -9,7 +9,7 @@ fun mergeConsecutiveMessages(messages: Iterable<SimpleMessage>): List<SimpleMess
     for (message in messages) {
         if (prevMessage != null && prevMessage.fromId == message.fromId) {
             prevMessage = prevMessage.apply {
-                this.text += message.text
+                this.text += " ${message.text}"
             }
         } else {
             prevMessage = SimpleMessage(message.fromId, message.text)

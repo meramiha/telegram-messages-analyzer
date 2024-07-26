@@ -1,6 +1,8 @@
 package com.neveraskedforthis.telegram
 
 import com.neveraskedforthis.telegram.models.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -28,49 +30,35 @@ fun main(args: Array<String>) {
     val allTexts = allMessages.map { message ->
         SimpleMessage(
             message.from_id, message.text_entities.filterNot { it.text.isBlank() }.joinToString(" ") { textEntity ->
-                "$START_TOKEN${textEntity.text.replace("\n", "\\n")}$END_TOKEN"
+                textEntity.text.replace("\n", "\\n")
             }
         )
     }
 
-    val polinasIds = listOf<String>(allTexts.first().fromId) // TODO
+    val polinasIds = listOf(allTexts.first().fromId) // TODO
     val allTextsReplaceIds = allTexts.asIterable().joinIds(polinasIds)
 
     val allTextsMerged = mergeConsecutiveMessages(allTextsReplaceIds.asIterable())
 
-    val dataset =
-        prepareData(allTextsMerged, allTextsMerged.first().fromId, allTextsMerged.drop(1).first().fromId)
+    @Serializable
+    data class GPTMessage(val role: String, val content: String)
 
+    val gptMessages =
+        allTextsMerged.zipWithNext().mapNotNull { (p, d) ->
+            if (!polinasIds.contains(p.fromId)) null
+            else
+                mapOf(
+                    "messages" to
+                            listOf(
+                                GPTMessage(
+                                    "system",
+                                    "You are Полина's boyfriend"
+                                ),
 
-
-    File("result.csv").writeText(dataset.joinToString("\n") { "${it.first}|${it.second}" })
-}
-
-
-fun prepareData(messages: List<SimpleMessage>, requestId: String, responseId: String): List<Pair<String, String>> {
-    val dataPairs = mutableListOf<Pair<String, String>>()
-
-    var currentRequest = ""
-    var currentResponseTokens = mutableListOf<String>()
-
-    for (message in messages) {
-        val tokens = message.text.split(" ")
-
-        if (message.fromId == requestId) {
-            if (currentResponseTokens.isNotEmpty()) {
-                for (token in currentResponseTokens) {
-
-                    dataPairs.add(currentRequest to token)
-                    currentRequest += " $token"
-                }
-            }
-
-            currentRequest = message.text
-            currentResponseTokens.clear()
-        } else if (message.fromId == responseId) {
-            currentResponseTokens = tokens.toMutableList()
+                                GPTMessage("user", p.text),
+                                GPTMessage("assistant", d.text)
+                            )
+                )
         }
-    }
-
-    return dataPairs
+    File("result.jsonl").writeText(gptMessages.joinToString("\n") { json.encodeToString(it) })
 }

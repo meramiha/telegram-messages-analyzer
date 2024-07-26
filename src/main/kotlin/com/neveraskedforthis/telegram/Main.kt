@@ -41,8 +41,7 @@ fun main(args: Array<String>) {
 
     val allLengthsInWords = allTexts.map { it.split(Regex("\\s")) }.map { it.size }
 
-
-    println("with average length ${allLengthsInCharactersExcludingWhitespace.average()} characters (excluding whitespace)")
-    println("with average length ${allLengthsInCharactersIncludingWhitespace.average()} characters (including whitespace)")
-    println("with average length ${allLengthsInWords.average()} words ")
+    println("with average length ${"%.2f".format(allLengthsInCharactersExcludingWhitespace.average())} characters (excluding whitespace)")
+    println("with average length ${"%.2f".format(allLengthsInCharactersIncludingWhitespace.average())} characters (including whitespace)")
+    println("with average length ${"%.2f".format(allLengthsInWords.average())} words")
 }

@@ -39,7 +39,7 @@ fun main(args: Array<String>) {
     val allLengthsInCharactersExcludingWhitespace = allTexts.map { it.filterNot(::isWhitespace).length }
     val allLengthsInCharactersIncludingWhitespace = allTexts.map { it.length }
 
-    val allLengthsInWords = allTexts.map { it.split(" ", "\n", "\t") }.map { it.size }
+    val allLengthsInWords = allTexts.map { it.split(Regex("\\s")) }.map { it.size }
 
 
     println("with average length ${allLengthsInCharactersExcludingWhitespace.average()} characters (excluding whitespace)")
